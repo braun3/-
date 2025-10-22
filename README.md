@@ -29,6 +29,66 @@
 | **Distributed / Blockchain** | 분산스토리지, Proof-of-Replication, Proof-of-Spacetime |
 | **Soft Skills** | 장애 대응, 협업, 커뮤니케이션, 보안정책 분석 |
 
+## 인프라 환경 구성 (Infrastructure Stack)
+
+### 🧱 Storage & Controller
+- **JBOD System:** AIC J2024-02-03X 2.5" Bays JBOD Storage  
+- **Controller:** LSI 9580-8i8e MegaRAID (SAS/SATA Hybrid)  
+- **External Cabling:** SFF-8624 SAS External Cable  
+- **Storage Tiering:**  
+  - NVMe SSD (Primary Tier)  
+  - SATA SSD (Cache / Secondary Tier)  
+  - HDD (Cold Storage Tier)
+
+---
+
+### 🧩 Compute Node #1
+| 구성 | 사양 |
+|------|------|
+| **Mainboard** | Gigabyte MZ32-AR0 (Server Grade) |
+| **CPU** | AMD EPYC 7302P (16C / 32T / 2.5GHz / 128MB L3) |
+| **Memory** | Samsung REG ECC DDR4 64GB |
+| **NVMe SSD (OS)** | Samsung 980 EVO 1TB |
+| **NVMe SSD (Data)** | Samsung PM1733 3.84TB |
+| **HDD (Storage)** | WD HC550 18TB SATA |
+| **RAID Controller** | MegaRAID CLA4448 |
+| **Case** | 4U 산업용 케이스 |
+| **Power Supply** | Micronics Astro GD750W Full Moduler |
+| **Network** | Intel X550-T2 10GbE NIC |
+| **GPU** | Gigabyte RTX 3060 |
+| **Cooling** | TR4 Active Cooler |
+
+---
+
+### 🧩 Compute Node #2
+| 구성 | 사양 |
+|------|------|
+| **Mainboard** | Gigabyte / ASRock B550 |
+| **CPU** | AMD Ryzen 7 5600X |
+| **Memory** | Samsung DDR4 3200MHz 32GB |
+| **Storage** | FireCuda 520 NVMe 1TB + 2TB |
+| **GPU** | RTX 3060 Gaming OC 12GB (Rev 2.0) |
+| **Power Supply** | Micronics Astro GD750W Full Moduler |
+
+---
+
+### 🌐 Network & Topology
+- **Network Interface:** Intel X550-T2 (10GbE Dual Port)  
+- **LACP Bonding / VLAN Segmentation** 적용  
+- **Jumbo Frame (MTU 9000)** 구성  
+- **JBOD – Compute 간 DAS 연결 (SAS 12Gb/s)**  
+- 내부 노드 간 전송속도 약 8~9Gbps 확인  
+
+---
+
+### ⚙️ 기술적 포인트
+- NVMe Tier + SATA Tier + HDD Tier의 **계층형 스토리지 구조 설계**
+- MegaRAID 기반 JBOD 환경 구성으로 **고가용성(HA) 확보**
+- GPU (RTX 3060) 기반 병렬 연산 환경 운용
+- 10GbE LACP 네트워크 구성으로 데이터 처리 대역폭 최적화
+- Linux 환경에서 JBOD, RAID, iSCSI 및 hwloc 연동 테스트 완료
+
+
 # Linux 기반 환경 구축 로그
 
 ## 기간
