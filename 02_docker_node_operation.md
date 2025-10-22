@@ -6,8 +6,8 @@
 ## 데이터 경로 바인딩 및 컨테이너 실행
 ```bash
 sudo systemctl stop docker
-sudo mount --bind /home/aztech/sinso /var/lib/docker
+sudo mount --bind /home/<usrhome>/docker_s /var/lib/docker
 sudo systemctl start docker
 docker pull <service_image_name>
-docker run -d --name compute-node -v /home/aztech/sinso:/data <service_image_name>
+docker run -d --name compute-node -v /home/<usrhome>/docker_s:/data <service_image_name>
 docker exec -it compute-node /bin/bash
