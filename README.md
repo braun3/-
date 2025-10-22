@@ -33,8 +33,8 @@
 ## 인프라 환경 구성 (Infrastructure Stack)
 
 ### Storage & Controller
-- **JBOD System:** AIC J2024-02-03X 2.5" Bays JBOD Storage  
-- **Controller:** LSI 9580-8i8e MegaRAID (SAS/SATA Hybrid)  
+- **JBOD System:** JBOD Storage  
+- **Controller:** MegaRAID (SAS/SATA Hybrid)  
 - **External Cabling:** SFF-8624 SAS External Cable  
 - **Storage Tiering:**  
   - NVMe SSD (Primary Tier)  
