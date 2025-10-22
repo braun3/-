@@ -229,71 +229,30 @@ iostat -xm 1 5
 ```
 ## 자동화 및 스크립트 기술
 ```
-# Shell Script 기반 자동화
-    #!/bin/bash
-    qty=0
-    echo "Deal"
-    while true;
-    do
-            num=`<PROCESS_CHECK_COMMAND> | egrep 'TaskA|TaskB' | wc -l`;
-            if [ $num -lt 24 ]
-            then
-                    if [ $qty -lt 99 ]; then
-                            uuid=$(sshpass -p <password> ssh -p <port> <username>@<ip> "bash /home/<userhome>/deal.sh | grep 'deal uuid:' | awk '{print \$3}'");
-                            echo "$uuid";
-                            <Process_command> $uuid <data_file_path>;
-                            current_time=$(date '+%Y-%m-%d %H:%M:%S');
-                            qty=$((qty + 1));
-                            echo "Current count value: $qty at $current_time"
-                    else
-                            echo "DEAL EXIT $qty at $current_time"
-                            exit 0
-                    fi
-            fi
-            sleep 2700;
-    done
-  # Python 기반 로그 파싱 알람
-    import requests
-    import json
-    
-    # Slack webhook URL 
-    slack_webhook_url = "<slack api addr>"
-    
-    names = []
-    addresses = []
+  #Shell Script 기반 자동화
+  - 목적: 반복적인 노드 작업(연산 큐 확인, 상태 점검, Deal 트리거 등) 자동화  
+  - 기능 개요:
+    - 작업 큐 상태 모니터링 및 조건부 실행  
+    - SSH 원격 명령 수행 및 로그 수집  
+    - 자동 재시작 및 처리량 제한 로직 내장  
+    - Slack 등 외부 API 연동을 통한 상태 알림  
+  - 적용 기술: Bash, sshpass, systemd timer, API 호출 자동화
+```
+  - 상세 스크립트: [auto_task.sh](./auto_task.sh)
 
-    # addr.txt 
-    with open('addr.txt', 'r',encoding='utf-8') as file:
-        for line in file:
-            
-            name, address = line.strip().split()
-            names.append(name)      
-            addresses.append(address)  
-    
-    for name, address in zip(names, addresses):
-        url = f"<api_url>"
-        response = requests.get(url)
-    
-        if response.status_code == 200:
-            # API에서 받은 JSON 데이터 파싱
-            data = response.json()
-            # data와 records 필드가 존재하고, records가 None이 아닌지 확인
-            records = data.get('data', {}).get('records')
-            if records: 
-                # 각 레코드에서 worker의 name 추출 및 메시지 전송
-                for record in records:
-                    worker_name = record.get("name")
-                    if worker_name: 
-                        # Slack으로 메시지 보내기 (이름과 worker name 둘 다 표시)
-                        slack_message = {
-                            "text": f"{name} : {worker_name}"
-                        }
-                        requests.post(slack_webhook_url, data=json.dumps(slack_message))
-                        print(f"Sent to Slack: {name} - Worker Name: {worker_name}")
-            else:
-                print(f"No valid records found for {address}")
-        else:
-            print(f"Failed to fetch data for {address}, status code: {response.status_code}")
+---
+
+### Python 기반 로그 파싱 및 알림 시스템
+```
+  - 목적: 노드 상태 및 로그 데이터를 주기적으로 수집하여 Slack 알림으로 전송  
+  - 기능 개요:
+    - REST API 호출을 통한 JSON 로그 데이터 수집  
+    - 필드 필터링 및 유효성 검증 후 메시지 생성  
+    - Slack Webhook으로 실시간 알림 전송  
+    - `addr.txt` 기반 멀티 노드 대상 병렬 처리 구조  
+  - 적용 기술: Python, Requests, JSON 파싱, Slack API 연동
+```
+  - 상세 스크립트: [log_alert.py](./log_alert.py)
 
     
 ```
