@@ -105,9 +105,13 @@
 ---
 
 ## 필수 패키지 설치
+
 ```bash
 sudo apt install mesa-opencl-icd ocl-icd-opencl-dev gcc git bzr jq pkg-config curl clang build-essential hwloc libhwloc-dev -y
 sudo apt upgrade -y
+
+---
+## 시스템 리소스 확장 및 개발 환경 구축
 
 **Docker 환경 구성 및 서비스 운영 관련 기술로그**
 
