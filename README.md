@@ -1,12 +1,12 @@
 
-# 🧾 포트폴리오
+# 포트폴리오
 
 보안관제·시스템 운영·자동화 구축 중심의 실무 경험을 기술적으로 정리한 포트폴리오입니다.  
 리눅스 인프라 기반 환경에서 보안, 운영, 자동화 및 분산 연산 시스템을 구축·운용한 경험을 중심으로 기술했습니다.
 
 ---
 
-## 🧠 경력 요약
+## 경력 요약
 
 - **경력 분야:** 보안관제, 정보보호시스템 운영, 인프라 관리, 자동화 구축  
 - **핵심 역할:** 침해 이벤트 분석 및 대응 / 시스템 장애 복구 / 자동화 및 효율화  
@@ -18,7 +18,7 @@
 
 ---
 
-## 🧩 기술 스택
+## 기술 스택
 
 | 분야 | 주요 기술 |
 |------|------------|
@@ -31,7 +31,7 @@
 
 ## 인프라 환경 구성 (Infrastructure Stack)
 
-### 🧱 Storage & Controller
+### Storage & Controller
 - **JBOD System:** AIC J2024-02-03X 2.5" Bays JBOD Storage  
 - **Controller:** LSI 9580-8i8e MegaRAID (SAS/SATA Hybrid)  
 - **External Cabling:** SFF-8624 SAS External Cable  
@@ -42,7 +42,7 @@
 
 ---
 
-### 🧩 Compute Node #1
+### Compute Node #1
 | 구성 | 사양 |
 |------|------|
 | **Mainboard** | Gigabyte MZ32-AR0 (Server Grade) |
@@ -60,7 +60,7 @@
 
 ---
 
-### 🧩 Compute Node #2
+### Compute Node #2
 | 구성 | 사양 |
 |------|------|
 | **Mainboard** | Gigabyte / ASRock B550 |
@@ -72,7 +72,7 @@
 
 ---
 
-### 🌐 Network & Topology
+### Network & Topology
 - **Network Interface:** Intel X550-T2 (10GbE Dual Port)  
 - **LACP Bonding / VLAN Segmentation** 적용  
 - **Jumbo Frame (MTU 9000)** 구성  
@@ -81,7 +81,7 @@
 
 ---
 
-### ⚙️ 기술적 포인트
+### 기술적 포인트
 - NVMe Tier + SATA Tier + HDD Tier의 **계층형 스토리지 구조 설계**
 - MegaRAID 기반 JBOD 환경 구성으로 **고가용성(HA) 확보**
 - GPU (RTX 3060) 기반 병렬 연산 환경 운용
@@ -177,6 +177,32 @@ df -h
 free -m
 iostat -xm 1 5
 ---
+## 자동화 및 스크립트 기술
+
+### Shell Script 기반 자동화
+```bash
+#!/bin/bash
+qty=0
+echo "Deal"
+while true;
+do
+        num=`<PROCESS_CHECK_COMMAND> | egrep 'TaskA|TaskB' | wc -l`;
+        if [ $num -lt 24 ]
+        then
+                if [ $qty -lt 99 ]; then
+                        uuid=$(sshpass -p <password> ssh -p <port> <username>@<ip> "bash /home/<userhome>/deal.sh | grep 'deal uuid:' | awk '{print \$3}'");
+                        echo "$uuid";
+                        <Process_command> $uuid <data_file_path>;
+                        current_time=$(date '+%Y-%m-%d %H:%M:%S');
+                        qty=$((qty + 1));
+                        echo "Current count value: $qty at $current_time"
+                else
+                        echo "DEAL EXIT $qty at $current_time"
+                        exit 0
+                fi
+        fi
+        sleep 2700;
+done
 
 ## 결과 요약
 - 리눅스 기반 분산 연산 환경 직접 구축 및 운영  
