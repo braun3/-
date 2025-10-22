@@ -167,6 +167,7 @@ sudo apt install mesa-opencl-icd ocl-icd-opencl-dev gcc git bzr jq pkg-config cu
   - 적용 예시: 
     ```bash
     sudo bash install_docker.sh
+    ```
     *(상세 스크립트는 [install_docker.sh](./install_docker.sh) 참조)*
     
 # 데이터 경로 바인딩 및 컨테이너 실행
