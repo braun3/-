@@ -1,7 +1,8 @@
 
 # 포트폴리오
 
-보안관제·시스템 운영·자동화 구축 중심의 실무 경험을 기술적으로 정리한 포트폴리오입니다.  
+공공기관에서 보안관제·시스템 운영 경험이 있습니다.
+자동화 구축 중심의 실무 경험을 기술적으로 정리한 포트폴리오입니다.  
 리눅스 인프라 기반 환경에서 보안, 운영, 자동화 및 분산 연산 시스템을 구축·운용한 경험을 중심으로 기술했습니다.
 
 ---
@@ -13,7 +14,7 @@
 - **강점 요약:**  
   • 공공기관 실무 경험 기반의 위협 분석 및 대응 능력  
   • 리눅스·네트워크 중심의 시스템 기술 역량  
-  • Python을 활용한 보안운영 자동화 및 로그 정규화 능력  
+  • Shellsciprt 을 활용한 보안운영 자동화 및 로그 정규화 능력  
   • 협업·커뮤니케이션 역량 (지방청, 부서 간 장애 대응 협업 경험)
 
 ---
@@ -72,12 +73,22 @@
 
 ---
 
-### Network & Topology
+### Network & Power Topology
 - **Network Interface:** Intel X550-T2 (10GbE Dual Port)  
 - **LACP Bonding / VLAN Segmentation** 적용  
 - **Jumbo Frame (MTU 9000)** 구성  
 - **JBOD – Compute 간 DAS 연결 (SAS 12Gb/s)**  
-- 내부 노드 간 전송속도 약 8~9Gbps 확인  
+- 내부 노드 간 전송속도 약 8~9Gbps 확인
+- **Switching Layer:** 10G UTP 16-Port Managed Switch 구성  
+  - VLAN 분리 및 LACP Aggregation 적용  
+  - Jumbo Frame (MTU 9000) 활성화  
+  - 모듈 간 Bandwidth Balance 조정으로 Throughput 최적화  
+- **Backbone Interconnect:** 40G Optical Module (4x10G Aggregation) 기반  
+  - 고대역폭 JBOD ↔ Compute Node 전송 구성  
+  - 광 트랜시버 및 DAC 기반 케이블링 최적화  
+- **Power Redundancy:** UPS 80kW (30min Backup Time)  
+  - 장애 시 데이터 유실 방지 및 안전한 Graceful Shutdown 자동화  
+  - UPS Status를 Bash 스크립트로 모니터링 및 알림 연동
 
 ---
 
@@ -97,10 +108,13 @@
 ## 시스템 환경
 | 항목 | 내용 |
 |------|------|
-| OS | Ubuntu 22.04 LTS |
-| CPU | AMD Ryzen Threadripper |
-| GPU | AMD Radeon RX 580 (OpenCL 지원) |
-| Storage | NVMe SSD + HDD Hybrid |
+| **운영체제(OS)** | Ubuntu 22.04 LTS |
+| **Compute Node #1** | Gigabyte MZ32-AR0 / AMD EPYC 7302P (16C 32T / 2.5GHz / 128MB L3) / ECC DDR4 64GB |
+| **Compute Node #2** | Gigabyte B550 / Ryzen 7 5600X / DDR4 32GB |
+| **GPU** | RTX 3060 12GB |
+| **Storage (Tiered)** | NVMe SSD (980 EVO 1TB, PM1733 3.84TB) + HDD (HC550 18TB) |
+| **Network** | Intel X550-T2 10GbE / VLAN / LACP / MTU 9000 |
+| **Power & UPS** | UPS 80kW (Backup 30min) |
 
 ---
 
@@ -112,6 +126,24 @@ sudo apt upgrade -y
 
 ---
 ## 시스템 리소스 확장 및 개발 환경 구축
+Swap Memory 구성
+- 메모리 사용량이 높은 연산 작업 환경에서 **임시 스왑 메모리 영역 추가 설정**  
+- 물리 RAM 부족 시 디스크 공간을 가상 메모리로 활용해 연산 안정성 확보
+
+```bash
+sudo fallocate -l 16G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+Go 버전 수동 설치를 통해 애플리케이션 빌드·실행 환경 직접 구성
+sudo wget https://dl.google.com/go/go1.<버전>.linux-amd64.tar.gz
+sudo tar -zxvf go1.<버전>.linux-amd64.tar.gz -C /usr/local
+환경변수등록
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+source ~/.bashrc
 
 **Docker 환경 구성 및 서비스 운영 관련 기술로그**
 
@@ -152,7 +184,7 @@ sudo systemctl enable myservice
 - 체인 통신용 포트 오픈 및 NAT 구성  
 - 네트워크 성능 점검(`iperf3`, `ping`, `netstat`)
 sudo ufw allow 22/tcp
-sudo ufw allow 1234/tcp
+sudo ufw allow <통신port>/tcp
 sudo ufw enable
 ---
 
@@ -160,7 +192,7 @@ sudo ufw enable
 - 설정 파일 자동 동기화(`rsync`, `scp`)  
 - 환경변수/버전 업데이트 자동화  
 - Worker 환경 구성 및 연결 테스트
-rsync -avz config/ user@192.168.1.10:/opt/config/
+rsync -avz config/ user@<node_ip>:/opt/config/
 scp setup.sh worker01:/home/user/
 ---
 
