@@ -5,7 +5,10 @@
 # System Operations and Optimization Log  
 **기간:** 2025년 9월 ~ 2025년 10월  
 **환경:** Ubuntu 22.04 LTS / AMD CPU / GPU(OpenCL) / NVMe SSD  
-
+```bash
+sudo fdisk -l
+sudo mount /dev/nvme0n1p1 /data
+sudo systemctl enable myservice
 ---
 
 ## 시스템 구축 및 환경 설정
@@ -19,28 +22,35 @@
 - Port forwarding / 방화벽 규칙 설정  
 - 체인 통신용 포트 오픈 및 NAT 구성  
 - 네트워크 성능 점검(`iperf3`, `ping`, `netstat`)
-
+sudo ufw allow 22/tcp
+sudo ufw allow 1234/tcp
+sudo ufw enable
 ---
 
 ## 배포 및 버전 관리
 - 설정 파일 자동 동기화(`rsync`, `scp`)  
 - 환경변수/버전 업데이트 자동화  
 - Worker 환경 구성 및 연결 테스트
-
+rsync -avz config/ user@192.168.1.10:/opt/config/
+scp setup.sh worker01:/home/user/
 ---
 
 ## 연산 프로세스 관리
 - GPU/CPU 자원 사용률 분석(`nvidia-smi`, `htop`)  
 - 병렬 연산 스케줄링(hwloc 기반)  
 - I/O 병목 및 프로세스 중단 시 재시작 자동화
-
+htop
+nvidia-smi
+journalctl -u compute-service
 ---
 
 ## 장애 대응 및 검증
 - 로그 기반 오류 분석(`journalctl`, `docker logs`)  
 - 메모리, 디스크 잔여량 점검(`df -h`, `free -m`)  
 - 비정상 종료 프로세스 자동 재시작 스크립트 작성
-
+df -h
+free -m
+iostat -xm 1 5
 ---
 
 ## 결과 요약
