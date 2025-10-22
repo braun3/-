@@ -12,9 +12,9 @@
 - **경력 분야:** 보안관제, 정보보호시스템 운영, 인프라 관리, 자동화 구축  
 - **핵심 역할:** 침해 이벤트 분석 및 대응 / 시스템 장애 복구 / 자동화 및 효율화  
 - **강점 요약:**  
-  • 공공기관 실무 경험 기반의 위협 분석 및 대응 능력  
+  • 공공기관 장비 운영과 관제 업무를 통한 실무 경험 기반의 위협 분석 및 대응 능력  
   • 리눅스·네트워크 중심의 시스템 기술 역량  
-  • Shellsciprt 을 활용한 보안운영 자동화 및 로그 정규화 능력  
+  • Pyhton, Shellsciprt 을 활용한 시스템 운영 자동화 및 로그 정규화 능력  
   • 협업·커뮤니케이션 역량 (지방청, 부서 간 장애 대응 협업 경험)
 
 ---
@@ -122,32 +122,40 @@
 
 ```bash
 sudo apt install mesa-opencl-icd ocl-icd-opencl-dev gcc git bzr jq pkg-config curl clang build-essential hwloc libhwloc-dev -y
-sudo apt upgrade -y
+  ## 기술적 목적
+  - OpenCL 기반 연산을 위한 GPU 런타임 환경 구성
+  - C/C++ 빌드 및 헤더 세팅
+  - CPU 자원 최적화를 위한 hwloc 기반 토폴로지 인식 구성
 
----
-## 시스템 리소스 확장 및 개발 환경 구축
-Swap Memory 구성
-- 메모리 사용량이 높은 연산 작업 환경에서 **임시 스왑 메모리 영역 추가 설정**  
-- 물리 RAM 부족 시 디스크 공간을 가상 메모리로 활용해 연산 안정성 확보
+* 시스템 리소스 확장 및 개발 환경 구축
+  # Swap Memory 구성
+  ```bash
+  sudo fallocate -l 16G /swapfile
+  sudo chmod 600 /swapfile
+  sudo mkswap /swapfile
+  sudo swapon /swapfile
+  ## 기술적 목적
+    - 메모리 사용량이 높은 연산 작업 환경에서 **임시 스왑 메모리 영역 추가 설정**  
+    - 물리 RAM 부족 시 디스크 공간을 가상 메모리로 활용해 연산 안정성 확보
 
-```bash
-sudo fallocate -l 16G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
 
-Go 버전 수동 설치를 통해 애플리케이션 빌드·실행 환경 직접 구성
-sudo wget https://dl.google.com/go/go1.<버전>.linux-amd64.tar.gz
-sudo tar -zxvf go1.<버전>.linux-amd64.tar.gz -C /usr/local
-환경변수등록
-export GOROOT=/usr/local/go
-export GOPATH=$HOME/go
-export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-source ~/.bashrc
-
-**Docker 환경 구성 및 서비스 운영 관련 기술로그**
-
+  # Go 버전 수동 설치를 통해 애플리케이션 빌드·실행 환경 직접 구성
+  ```bash
+  sudo wget https://dl.google.com/go/go1.<버전>.linux-amd64.tar.gz
+  sudo tar -zxvf go1.<버전>.linux-amd64.tar.gz -C /usr/local
+  # 환경변수등록
+  export GOROOT=/usr/local/go
+  export GOPATH=$HOME/go
+  export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+  source ~/.bashrc
+  ## 기술적 목적
+    - 메모리 사용량이 높은 연산 작업 환경에서 **임시 스왑 메모리 영역 추가 설정**  
+    - 물리 RAM 부족 시 디스크 공간을 가상 메모리로 활용해 연산 안정성 확보
 ```markdown
+---
+* Docker 환경 구성 및 서비스 운영 관련 기술로그**
+
+
 # Docker 기반 노드 운영 환경 구성 로그
 
 ## 데이터 경로 바인딩 및 컨테이너 실행
