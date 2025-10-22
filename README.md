@@ -53,8 +53,6 @@
 | **NVMe SSD (Data)** | Samsung PM1733 3.84TB |
 | **HDD (Storage)** | WD HC550 18TB SATA |
 | **RAID Controller** | MegaRAID CLA4448 |
-| **Case** | 4U 산업용 케이스 |
-| **Power Supply** | Micronics Astro GD750W Full Moduler |
 | **Network** | Intel X550-T2 10GbE NIC |
 | **GPU** | Gigabyte RTX 3060 |
 | **Cooling** | TR4 Active Cooler |
