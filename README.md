@@ -102,9 +102,6 @@
 
 # Linux 기반 환경 구축 로그
 
-## 기간
-2025년 9월 ~ 2025년 10월
-
 ## 시스템 환경
 | 항목 | 내용 |
 |------|------|
@@ -157,7 +154,20 @@ sudo apt install mesa-opencl-icd ocl-icd-opencl-dev gcc git bzr jq pkg-config cu
 ---
 
 ## Docker 기반 노드 운영 환경 구성 로그
-
+# 자동 설치 및 초기화 스크립트 구성
+  - 목적: 신규 Ubuntu 서버 환경 자동 초기화 및 Docker 배포 자동화  
+  - 언어: Bash Shell Script  
+  - 주요 기능:  
+    - Docker 및 Python3 자동 설치  
+    - GPG 키 등록 및 APT Repository 자동 구성  
+    - 서비스 자동 시작(systemctl enable)  
+    - 사용자 그룹 설정 및 권한 부여  
+    - 절전 기능 비활성화로 장시간 연산 환경 안정화  
+  - 특징: 비대화식 설치 및 오류 감지 로직 내장  
+  - 적용 예시: 
+    ```bash
+    sudo bash install_docker.sh
+    *(상세 스크립트는 [install_docker.sh](./install_docker.sh) 참조)*
 # 데이터 경로 바인딩 및 컨테이너 실행
 ```bash
 sudo systemctl stop docker
@@ -175,21 +185,11 @@ docker exec -it compute-node /bin/bash
 - Linux 서버 환경 세팅, 원격 SSH 접근 구성  
 - 디스크 마운트 및 RAID/NVMe 관리  
 - 자원 자동 재시작(systemd), 로그 관리 자동화
-
+- 대용량 데이터 처리를 위한 스토리지 환경을 ZFS 기반 RAID5로 구성
 ```bash
 sudo fdisk -l
 sudo mount /dev/nvme0n1p1 /data
 sudo systemctl enable myservice
-
-
-대용량 데이터 처리를 위한 스토리지 환경을 ZFS 기반 RAID5로 구성하였습니다.  
-NVMe·SATA·HDD 계층형 구조로 설계하여 성능과 안정성을 모두 확보했습니다.
-<img width="550" height="52" alt="화면 캡처 2025-10-22 130645" src="https://github.com/user-attachments/assets/ac96487f-d193-4533-b642-fef9a725f821" />
-
-
-
-
----
 
 # 네트워크 구성
 - Port forwarding / 방화벽 규칙 설정  
@@ -198,7 +198,7 @@ NVMe·SATA·HDD 계층형 구조로 설계하여 성능과 안정성을 모두 �
 sudo ufw allow 22/tcp
 sudo ufw allow <통신port>/tcp
 sudo ufw enable
----
+
 
 # 배포 및 버전 관리
 - 설정 파일 자동 동기화(`rsync`, `scp`)  
@@ -206,7 +206,7 @@ sudo ufw enable
 - Worker 환경 구성 및 연결 테스트
 rsync -avz config/ user@<node_ip>:/opt/config/
 scp setup.sh worker01:/home/user/
----
+
 
 # 연산 프로세스 관리
 - GPU/CPU 자원 사용률 분석(`nvidia-smi`, `htop`)  
@@ -215,9 +215,8 @@ scp setup.sh worker01:/home/user/
 htop
 nvidia-smi
 journalctl -u compute-service
----
 
-## 장애 대응 및 검증
+# 장애 대응 및 검증
 - 로그 기반 오류 분석(`journalctl`, `docker logs`)  
 - 메모리, 디스크 잔여량 점검(`df -h`, `free -m`)  
 - 비정상 종료 프로세스 자동 재시작 스크립트 작성
@@ -225,38 +224,80 @@ df -h
 free -m
 iostat -xm 1 5
 ---
+```
 ## 자동화 및 스크립트 기술
+```
+# Shell Script 기반 자동화
+    #!/bin/bash
+    qty=0
+    echo "Deal"
+    while true;
+    do
+            num=`<PROCESS_CHECK_COMMAND> | egrep 'TaskA|TaskB' | wc -l`;
+            if [ $num -lt 24 ]
+            then
+                    if [ $qty -lt 99 ]; then
+                            uuid=$(sshpass -p <password> ssh -p <port> <username>@<ip> "bash /home/<userhome>/deal.sh | grep 'deal uuid:' | awk '{print \$3}'");
+                            echo "$uuid";
+                            <Process_command> $uuid <data_file_path>;
+                            current_time=$(date '+%Y-%m-%d %H:%M:%S');
+                            qty=$((qty + 1));
+                            echo "Current count value: $qty at $current_time"
+                    else
+                            echo "DEAL EXIT $qty at $current_time"
+                            exit 0
+                    fi
+            fi
+            sleep 2700;
+    done
+  # Python 기반 로그 파싱 알람
+    import requests
+    import json
+    
+    # Slack webhook URL 
+    slack_webhook_url = "<slack api addr>"
+    
+    names = []
+    addresses = []
 
-### Shell Script 기반 자동화
-```bash
-#!/bin/bash
-qty=0
-echo "Deal"
-while true;
-do
-        num=`<PROCESS_CHECK_COMMAND> | egrep 'TaskA|TaskB' | wc -l`;
-        if [ $num -lt 24 ]
-        then
-                if [ $qty -lt 99 ]; then
-                        uuid=$(sshpass -p <password> ssh -p <port> <username>@<ip> "bash /home/<userhome>/deal.sh | grep 'deal uuid:' | awk '{print \$3}'");
-                        echo "$uuid";
-                        <Process_command> $uuid <data_file_path>;
-                        current_time=$(date '+%Y-%m-%d %H:%M:%S');
-                        qty=$((qty + 1));
-                        echo "Current count value: $qty at $current_time"
-                else
-                        echo "DEAL EXIT $qty at $current_time"
-                        exit 0
-                fi
-        fi
-        sleep 2700;
-done
+    # addr.txt 
+    with open('addr.txt', 'r',encoding='utf-8') as file:
+        for line in file:
+            
+            name, address = line.strip().split()
+            names.append(name)      
+            addresses.append(address)  
+    
+    for name, address in zip(names, addresses):
+        url = f"<api_url>"
+        response = requests.get(url)
+    
+        if response.status_code == 200:
+            # API에서 받은 JSON 데이터 파싱
+            data = response.json()
+            # data와 records 필드가 존재하고, records가 None이 아닌지 확인
+            records = data.get('data', {}).get('records')
+            if records: 
+                # 각 레코드에서 worker의 name 추출 및 메시지 전송
+                for record in records:
+                    worker_name = record.get("name")
+                    if worker_name: 
+                        # Slack으로 메시지 보내기 (이름과 worker name 둘 다 표시)
+                        slack_message = {
+                            "text": f"{name} : {worker_name}"
+                        }
+                        requests.post(slack_webhook_url, data=json.dumps(slack_message))
+                        print(f"Sent to Slack: {name} - Worker Name: {worker_name}")
+            else:
+                print(f"No valid records found for {address}")
+        else:
+            print(f"Failed to fetch data for {address}, status code: {response.status_code}")
+
+    
+```
 
 ## 결과 요약
 - 리눅스 기반 분산 연산 환경 직접 구축 및 운영  
 - 자원 효율 및 시스템 안정성 향상  
 - 자동화된 배포 및 로그 추적 프로세스 완성
 
----
-
-## 필수 패키지 설치
