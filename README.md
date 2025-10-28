@@ -252,6 +252,26 @@ iostat -xm 1 5
 
 ---
 
+## Storage System Build & Operation
+```
+  # Overview
+  - 목적: Seagate JBOD 장비를 활용하여 Linux 기반 블록/파일 스토리지 환경을 직접 구축 및 운영한 프로젝트입니다.
+          MegaRAID Controller와 iSCSI 매핑을 통해 스토리지 리소스를 노드에 연결하고,
+          ZFS 및 mdadm 기반 RAID 구성을 통해 데이터 안정성과 확장성을 확보하였습니다.
+          NFS 공유를 통해 NAS 형태의 파일 접근 환경을 제공하였습니다.
+  - System Architecture:
+      [Seagate JBOD] 
+     ↳ MegaRAID Controller
+        ↳ iSCSI Target (Block Storage)
+           ↳ Linux Host (Initiator)
+              ↳ ZFS / mdadm RAID 구성
+                 ↳ NFS Server
+                    ↳ Client Node (mount)
+  - 적용 기술: JBOD, MegaRAID Controller, ZFS(zpool), mdadm, SCSI (targetcli, iscsiadm) ,NFS (/etc/exports),iostat, nfsstat, zpool status, Python / Shell Script
+
+```
+ 
+
 ## 결과 요약
 - 리눅스 기반 분산 연산 환경 직접 구축 및 운영  
 - 자원 효율 및 시스템 안정성 향상  
