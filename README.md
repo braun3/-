@@ -2,8 +2,8 @@
 # 포트폴리오
 
 공공기관에서 보안관제·시스템 운영 경험이 있습니다.
-자동화 구축 중심의 실무 경험을 기술적으로 정리한 포트폴리오입니다.  
-리눅스 인프라 기반 환경에서 보안, 운영, 자동화 및 분산 연산 시스템을 구축·운용한 경험을 중심으로 기술했습니다.
+마이닝 시스템 구축 및 운영 업무를 진행했습니다.
+실무 경험을 기술적으로 정리한 포트폴리오입니다.  
 
 ---
 
@@ -23,11 +23,10 @@
 
 | 분야 | 주요 기술 |
 |------|------------|
-| **OS / Infra** | Linux (Ubuntu), JBOD, RAID, iSCSI, LVM |
-| **Network** | VLAN, LACP, MTU 9000, TCP/IP |
+| **OS / Infra** | Linux (Ubuntu), STORAGE(Segate,Synoloy),Network Storage Protocols, LVM |
+| **Network** | IP Addressing / Network Segmentation,Network Configuration,Routing & Isolation, TCP/IP |
 | **Security** | IDS/IPS, ESM, FW, DLP, 시그니처 룰 관리, 탐지 이벤트 분석 |
 | **Automation / Scripting** | Python(로그 파싱, API 연동, 자동화 스크립트), Bash |
-| **Distributed / Blockchain** | 분산스토리지, Proof-of-Replication, Proof-of-Spacetime |
 | **Soft Skills** | 장애 대응, 협업, 커뮤니케이션, 보안정책 분석 |
 
 ## 인프라 환경 구성 (Infrastructure Stack)
@@ -43,34 +42,16 @@
 
 ---
 
-### Compute Node #1
-| 구성 | 사양 |
-|------|------|
-| **Mainboard** | Gigabyte MZ32-AR0 (Server Grade) |
-| **CPU** | AMD EPYC 7302P (16C / 32T / 2.5GHz / 128MB L3) |
-| **Memory** | Samsung REG ECC DDR4 64GB |
-| **NVMe SSD (OS)** | Samsung 980 EVO 1TB |
-| **NVMe SSD (Data)** | Samsung PM1733 3.84TB |
-| **HDD (Storage)** | WD HC550 18TB SATA |
-| **RAID Controller** | MegaRAID CLA4448 |
-| **Network** | Intel X550-T2 10GbE NIC |
-| **GPU** | Gigabyte RTX 3060 |
-| **Cooling** | TR4 Active Cooler |
+### Infrastructure Overview
+
+- **Storage Architecture:** JBOD 기반 스토리지 서버 구성 (RAID 5 + MegaRAID Controller)
+- **Storage Tiering:** NVMe SSD (Primary), SATA SSD (Cache), HDD (Archive Tier)
+- **Storage Access Protocols:** iSCSI 및 NFS 기반 스토리지 공유 구성
+- **Volume Management:** LVM을 통한 볼륨 확장 및 관리 자동화
+- **Network Configuration:** Static IP 기반 사설망, VLAN 분리, 10GbE 전송망 구축
+- **Compute Nodes:** AMD EPYC / Ryzen 기반 듀얼 노드 구성 및 GPU 탑재 운용
 
 ---
-
-### Compute Node #2
-| 구성 | 사양 |
-|------|------|
-| **Mainboard** | Gigabyte / ASRock B550 |
-| **CPU** | AMD Ryzen 7 5600X |
-| **Memory** | Samsung DDR4 3200MHz 32GB |
-| **Storage** | FireCuda 520 NVMe 1TB + 2TB |
-| **GPU** | RTX 3060 Gaming OC 12GB (Rev 2.0) |
-| **Power Supply** | Micronics Astro GD750W Full Moduler |
-
----
-
 ### Network & Power Topology
 - **Network Interface:** Intel X550-T2 (10GbE Dual Port)  
 - **LACP Bonding / VLAN Segmentation** 적용  
@@ -93,9 +74,9 @@
 ### 기술적 포인트
 - NVMe Tier + SATA Tier + HDD Tier의 **계층형 스토리지 구조 설계**
 - MegaRAID 기반 JBOD 환경 구성으로 **고가용성(HA) 확보**
-- GPU (RTX 3060) 기반 병렬 연산 환경 운용
+- GPU (RTX 3xxx) 기반 병렬 연산 환경 운용
 - 10GbE LACP 네트워크 구성으로 데이터 처리 대역폭 최적화
-- Linux 환경에서 JBOD, RAID, iSCSI 및 hwloc 연동 테스트 완료
+- Linux 환경에서 JBOD, RAID, iSCSI 및 hwloc 연동 완료료
 
 
 # Linux 기반 환경 구축 로그
